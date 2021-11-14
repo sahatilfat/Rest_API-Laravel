@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class EmployeeController extends Controller
@@ -41,7 +43,29 @@ class EmployeeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'nama' => ['required'],
+            'jabatan' => ['required'],
+            'deskripsi' => ['required'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        };
+
+        try {
+            $employee = Employee::create($request->all());
+            $response = [
+                'messgae' => 'Employee created',
+                'data' => $employee,
+            ];
+
+            return response()->json($response, Response::HTTP_CREATED);
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => 'Failed ' . $e->errorInfo,
+            ]);
+        }
     }
 
     /**
