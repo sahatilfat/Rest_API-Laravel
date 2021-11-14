@@ -99,7 +99,31 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $employee = Employee::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'nama' => ['required'],
+            'jabatan' => ['required'],
+            'deskripsi' => ['required'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
+        };
+
+        try {
+            $employee->update($request->all());
+            $response = [
+                'messgae' => 'Employee updated',
+                'data' => $employee,
+            ];
+
+            return response()->json($response, Response::HTTP_OK);
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => 'Failed ' . $e->errorInfo,
+            ]);
+        }
     }
 
     /**
