@@ -76,7 +76,12 @@ class EmployeeController extends Controller
      */
     public function show($id)
     {
-        //
+        $employee = Employee::findOrFail($id);
+        $response = [
+            'message' => 'Detail of Employee resource',
+            'data' => $employee,
+        ];
+        return response()->json($response, Response::HTTP_OK);
     }
 
     /**
