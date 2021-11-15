@@ -139,6 +139,18 @@ class EmployeeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $employee = Employee::findOrFail($id);
+
+        try {
+            $employee->delete();
+            $response = [
+                'message' => 'employee delete',
+            ];
+            return response()->json($response, Response::HTTP_OK);
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => "failed" . $e->errorInfo
+            ]);
+        }
     }
 }
